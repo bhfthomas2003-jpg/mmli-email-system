@@ -28,7 +28,7 @@
 </style>
 </head>
 <body style="margin:0;padding:0;background-color:#F4F6FA;">
-<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#F4F6FA;">See how {{EVENT_NAME}} went — highlights and results inside.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#F4F6FA;">See how the event went — highlights and results inside.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
 <center role="article" aria-roledescription="email" style="width:100%;background-color:#F4F6FA;">
 <!--[if mso]>
 <table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td>
@@ -65,7 +65,7 @@
               </tr>
               <tr>
                 <td align="center" style="padding:2px 30px 30px 30px;font-family:Georgia, 'Times New Roman', Times, serif;font-size:26px;line-height:32px;color:#FFFFFF;">
-                  {{EVENT_NAME}} — Highlights & Results
+                  Event Highlights & Results
                 </td>
               </tr>
             </table>
@@ -81,57 +81,13 @@
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="padding:0 0 18px 0;font-family:Arial, Helvetica, sans-serif;font-size:15px;line-height:26px;color:#2B2F38;">
-                  Dear {{FIRST_NAME}} {{LAST_NAME}},
+                  Dear {{RECIPIENT_NAME}},
                 </td>
               </tr>
               
               <tr>
                 <td style="padding:0 0 18px 0;font-family:Arial, Helvetica, sans-serif;font-size:15px;line-height:26px;color:#2B2F38;">
-                  Thank you for being part of <strong>{{EVENT_NAME}}</strong>. Here is a summary of how the event unfolded.
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:4px 0 28px 0;">
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F8F9FC;border:1px solid #E3E7EF;border-left:4px solid #C9A227;border-radius:6px;">
-                    <tr>
-                      <td style="padding:20px 24px;">
-                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                          <tr><td colspan="2" style="padding:0 0 10px 0;font-family:Arial, Helvetica, sans-serif;font-size:11px;letter-spacing:2px;color:#123B70;text-transform:uppercase;font-weight:bold;">Event Summary</td></tr>
-                          
-                    <tr>
-                      <td style="padding:9px 0;font-family:Arial, Helvetica, sans-serif;font-size:13px;color:#6B7280;width:130px;vertical-align:top;">Attendees</td>
-                      <td style="padding:9px 0;font-family:Arial, Helvetica, sans-serif;font-size:14px;color:#2B2F38;font-weight:bold;vertical-align:top;">{{ATTENDEE_COUNT}}</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:9px 0;font-family:Arial, Helvetica, sans-serif;font-size:13px;color:#6B7280;width:130px;vertical-align:top;">Top Performer(s)</td>
-                      <td style="padding:9px 0;font-family:Arial, Helvetica, sans-serif;font-size:14px;color:#2B2F38;font-weight:bold;vertical-align:top;">{{TOP_PERFORMERS}}</td>
-                    </tr>
-                    <tr>
-                      <td style="padding:9px 0;font-family:Arial, Helvetica, sans-serif;font-size:13px;color:#6B7280;width:130px;vertical-align:top;">Date Held</td>
-                      <td style="padding:9px 0;font-family:Arial, Helvetica, sans-serif;font-size:14px;color:#2B2F38;font-weight:bold;vertical-align:top;">{{EVENT_DATE}}</td>
-                    </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:0 0 18px 0;font-family:Arial, Helvetica, sans-serif;font-size:15px;line-height:26px;color:#2B2F38;">
-                  {{EVENT_SUMMARY_TEXT}}
-                </td>
-              </tr>
-              <tr>
-                <td align="center" style="padding:8px 0 30px 0;">
-                  <!--[if mso]>
-                  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{WEBSITE}}" style="height:48px;v-text-anchor:middle;width:260px;" arcsize="12%" strokecolor="#C9A227" fillcolor="#C9A227">
-                  <w:anchorlock/>
-                  <center style="color:#0B2545;font-family:Arial, Helvetica, sans-serif;font-size:15px;font-weight:bold;">View Full Report & Photos</center>
-                  </v:roundrect>
-                  <![endif]-->
-                  <!--[if !mso]><!-- -->
-                  <a href="{{WEBSITE}}" target="_blank" style="background-color:#C9A227;color:#0B2545;border:1px solid #C9A227;font-family:Arial, Helvetica, sans-serif;font-size:15px;font-weight:bold;text-decoration:none;padding:14px 36px;border-radius:6px;display:inline-block;">View Full Report & Photos</a>
-                  <!--<![endif]-->
+                  {{MESSAGE_BODY}}
                 </td>
               </tr>
               <tr>
