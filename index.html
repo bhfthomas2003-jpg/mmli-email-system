@@ -128,8 +128,9 @@
 
   .toast{
     position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
-    background:var(--navy-deep); color:#fff; padding:10px 18px; border-radius:20px;
+    background:var(--navy-deep); color:#fff; padding:10px 18px; border-radius:14px;
     font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s; z-index:60;
+    max-width:90vw; width:max-content; text-align:center; line-height:1.5;
   }
   .toast.show{opacity:1; animation:toastIn .25s ease;}
   .toast.error{background:#B3261E;}
@@ -259,7 +260,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="templates-data.js"></script>
 <script>
   const grid = document.getElementById('grid');
@@ -286,21 +286,12 @@
   };
 
   // Sample starting content for the two content fields — fully editable/replaceable.
-  // ---- EmailJS configuration ----
-  // Fill these in after setting up your free EmailJS account (see the
-  // setup steps shared alongside this file). Until then, the Send
-  // Email Now button will show a friendly setup reminder instead of
-  // failing silently.
-  const EMAILJS_CONFIG = {
-    serviceId: 'service_rzfdqng',
-    templateId: 'template_wdl539j',
-    publicKey: 'USgQPTo3kQbfcablS',
-  };
-  function emailjsConfigured(){
-    return !Object.values(EMAILJS_CONFIG).some(v => v.startsWith('YOUR_'));
-  }
-  if (typeof emailjs !== 'undefined' && emailjsConfigured()) {
-    emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
+  // ---- Google Apps Script configuration ----
+  // Sends real email through your own Gmail account via a free Apps
+  // Script web app (see deployment steps shared alongside this file).
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzteEN3WOdHYjbqH1Wz0s5VWB7l5vY7lGzyGbj68UQFkRscRNHQRHVo2wNc6-aqXAlFwA/exec';
+  function appsScriptConfigured(){
+    return !!APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('YOUR_');
   }
 
   const CONTENT_DEFAULTS = {
@@ -381,7 +372,7 @@ We would be honored to partner with you in making this a successful and impactfu
     toast.textContent = msg;
     toast.className = 'toast show' + (type ? ' ' + type : '');
     clearTimeout(toast._t);
-    toast._t = setTimeout(()=>toast.classList.remove('show'), 2400);
+    toast._t = setTimeout(()=>toast.classList.remove('show'), type === 'error' ? 5000 : 2400);
   }
 
   function renderGrid(list){
@@ -486,8 +477,8 @@ We would be honored to partner with you in making this a successful and impactfu
   document.getElementById('sendNowBtn').addEventListener('click', async () => {
     if(!currentTpl) return;
 
-    if (typeof emailjs === 'undefined' || !emailjsConfigured()) {
-      showToast('Email sending isn\u2019t set up yet — see the setup steps to connect EmailJS.', 'error');
+    if (!appsScriptConfigured()) {
+      showToast('Email sending isn\u2019t set up yet — deploy the Apps Script and paste its URL into APPS_SCRIPT_URL.', 'error');
       return;
     }
 
@@ -507,18 +498,22 @@ We would be honored to partner with you in making this a successful and impactfu
     statusEl.classList.remove('show');
 
     try {
-      await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-        to_email: toEmail,
-        subject: subject,
-        message_html: fillTemplate(),
-        from_name: 'Mind Masters Liberia Initiative',
+      // Apps Script web apps don't return CORS headers the browser will
+      // let us read, so we can't confirm success/failure from the
+      // response itself — this request is fire-and-forget by design.
+      // no-cors mode avoids the CORS error entirely and still delivers
+      // the request to Apps Script, which sends the email synchronously.
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({ to: toEmail, subject: subject, html: fillTemplate() }),
       });
-      showToast('Email sent successfully!', 'success');
+      showToast('Email request sent — check Gmail\u2019s Sent folder in a moment to confirm delivery.', 'success');
       statusEl.classList.add('show');
       setTimeout(() => statusEl.classList.remove('show'), 3000);
     } catch (err) {
-      console.error('EmailJS send failed:', err);
-      showToast('Send failed — check your EmailJS setup and try again.', 'error');
+      console.error('Apps Script send failed:', err);
+      showToast('Send failed — check your internet connection and try again.', 'error');
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalLabel;
