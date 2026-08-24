@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMLI Email Template Library — Preview Dashboard</title>
+<style>
+  :root{
+    --navy-deep:#0B2545; --navy:#123B70; --navy-light:#1F4E8C;
+    --gold:#C9A227; --gold-light:#E8C860; --gold-pale:#F6ECC9;
+    --bg:#F4F6FA; --card:#FFFFFF; --border:#E3E7EF;
+    --text:#2B2F38; --text-muted:#6B7280;
+    --font-head: Georgia, 'Times New Roman', Times, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);}
+
+  @keyframes fadeInUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+  @keyframes panelIn{ from{opacity:0; transform:translateY(18px) scale(.98);} to{opacity:1; transform:translateY(0) scale(1);} }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  @keyframes pulseOk{ 0%{ transform:scale(.85); opacity:0;} 60%{ transform:scale(1.08); opacity:1;} 100%{ transform:scale(1); opacity:1;} }
+  @keyframes toastIn{ from{opacity:0; transform:translate(-50%,10px);} to{opacity:1; transform:translate(-50%,0);} }
+
+  /* ---- Floating decorative symbols (header) ---- */
+  @keyframes floatA{
+    0%{ transform:translate(0,0) rotate(0deg); }
+    50%{ transform:translate(6px,-16px) rotate(6deg); }
+    100%{ transform:translate(0,0) rotate(0deg); }
+  }
+  @keyframes floatB{
+    0%{ transform:translate(0,0) rotate(0deg); }
+    50%{ transform:translate(-8px,-12px) rotate(-5deg); }
+    100%{ transform:translate(0,0) rotate(0deg); }
+  }
+  @keyframes floatC{
+    0%{ transform:translate(0,0) rotate(0deg); }
+    50%{ transform:translate(5px,14px) rotate(4deg); }
+    100%{ transform:translate(0,0) rotate(0deg); }
+  }
+  @keyframes drift{
+    0%{ transform:translateX(0); }
+    100%{ transform:translateX(18px); }
+  }
+  @keyframes twinkle{
+    0%,100%{ opacity:.18; }
+    50%{ opacity:.55; }
+  }
+  @keyframes logoGlow{
+    0%,100%{ box-shadow:0 0 0 0 rgba(201,162,39,.0), 0 2px 10px rgba(0,0,0,.25); }
+    50%{ box-shadow:0 0 0 8px rgba(201,162,39,.18), 0 2px 14px rgba(0,0,0,.3); }
+  }
+  @keyframes logoBob{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-4px); }
+  }
+
+  .spinner{
+    display:inline-block; width:13px; height:13px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.35); border-top-color:#fff;
+    animation:spin .7s linear infinite; vertical-align:-2px; margin-right:6px;
+  }
+  .spinner.dark{border-color:rgba(11,37,69,.25); border-top-color:var(--navy-deep);}
+  header.app-header{
+    background:linear-gradient(135deg,var(--navy-deep),var(--navy) 60%,var(--navy-light));
+    color:#fff; padding:28px 20px 22px; position:relative; overflow:hidden;
+    animation:fadeIn .4s ease;
+  }
+  header.app-header::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:4px;
+    background:linear-gradient(90deg,var(--navy) 0%,var(--navy-light) 35%,var(--gold) 70%,var(--gold-light) 100%);
+  }
+  .brand-row{display:flex; align-items:center; gap:14px; position:relative; z-index:2;}
+  .brand-row img{
+    width:46px;height:46px;border-radius:50%;background:#fff;flex-shrink:0;
+    animation:logoBob 4.5s ease-in-out infinite, logoGlow 4.5s ease-in-out infinite;
+  }
+  .brand-title{font-family:var(--font-head); font-size:19px; line-height:1.25;}
+  .brand-sub{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gold-light); margin-top:2px;}
+  .app-desc{font-size:12.5px; color:#B9C6DC; margin-top:14px; max-width:640px; line-height:1.6; position:relative; z-index:2;}
+
+  /* Floating symbol layer that sits behind the header content */
+  .float-layer{
+    position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1;
+  }
+  .float-layer .sym{
+    position:absolute; font-family:var(--font-head); color:var(--gold-light);
+    opacity:.28; user-select:none; will-change:transform;
+  }
+  .float-layer .sym.star{
+    font-family:var(--font-body); color:#fff;
+  }
+  .float-layer .sym.dot{
+    width:5px; height:5px; border-radius:50%; background:var(--gold-light); font-size:0;
+    animation:twinkle 3.4s ease-in-out infinite;
+  }
+
+  main{max-width:1100px; margin:0 auto; padding:20px 16px 60px;}
+
+  .search-row{display:flex; gap:8px; margin:16px 0 18px;}
+  #search{
+    flex:1; padding:12px 14px; border-radius:8px; border:1px solid var(--border);
+    font-size:14px; background:#fff;
+  }
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px;}
+  .tpl-card{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:16px; cursor:pointer; transition:box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+    display:flex; flex-direction:column; gap:8px;
+    animation:fadeInUp .35s ease both;
+  }
+  .tpl-card:hover{box-shadow:0 8px 22px rgba(11,37,69,.16); transform:translateY(-3px); border-color:var(--gold-light);}
+  .tpl-card:active{transform:translateY(-1px) scale(.99);}
+  .tpl-card .num{
+    font-family:var(--font-head); font-size:11px; color:var(--gold); letter-spacing:1px;
+  }
+  .tpl-card h3{margin:0; font-size:15px; font-family:var(--font-head); color:var(--navy-deep); line-height:1.3;}
+  .tpl-card p{margin:0; font-size:12.5px; color:var(--text-muted); line-height:1.5;}
+  .tpl-card .thumb{
+    height:64px; border-radius:6px; background:linear-gradient(135deg,var(--navy-deep),var(--navy) 60%,var(--navy-light));
+    position:relative; overflow:hidden;
+  }
+  .tpl-card .thumb::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+    background:linear-gradient(90deg,var(--navy) 0%,var(--gold) 70%,var(--gold-light) 100%);
+  }
+  .tpl-card .thumb span{
+    position:absolute; left:10px; top:10px; font-size:9px; letter-spacing:2px;
+    color:var(--gold-light); text-transform:uppercase; font-family:var(--font-body);
+  }
+
+  /* ---- Modal / preview panel ---- */
+  .overlay{
+    display:none; position:fixed; inset:0; background:rgba(11,20,35,.6);
+    z-index:50; align-items:flex-start; justify-content:center; padding:0;
+  }
+  .overlay.open{display:flex; animation:fadeIn .18s ease;}
+  .panel{
+    background:#fff; width:100%; height:100%; max-width:100%;
+    display:flex; flex-direction:column;
+    animation:panelIn .28s cubic-bezier(.22,.9,.35,1);
+  }
+  .panel-header{
+    background:var(--navy-deep); color:#fff; padding:14px 16px;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .panel-header .titles{flex:1; min-width:160px;}
+  .panel-header h2{margin:0; font-size:15px; font-family:var(--font-head);}
+  .panel-header .purpose{font-size:11.5px; color:#B9C6DC; margin-top:2px;}
+  .icon-btn{
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.25); color:#fff;
+    border-radius:6px; padding:8px 12px; font-size:12.5px; cursor:pointer; font-family:var(--font-body);
+    transition:transform .12s ease, opacity .12s ease, background .15s ease;
+  }
+  .icon-btn.gold{background:var(--gold); color:var(--navy-deep); border-color:var(--gold); font-weight:bold;}
+  .icon-btn:hover{opacity:.92;}
+  .icon-btn:active{transform:scale(.96);}
+  .icon-btn[disabled]{opacity:.6; cursor:not-allowed; transform:none;}
+  .toolbar{
+    display:flex; gap:8px; padding:10px 16px; background:var(--card); border-bottom:1px solid var(--border);
+    flex-wrap:wrap; align-items:center;
+  }
+  .seg{display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden;}
+  .seg button{
+    border:none; background:#fff; padding:8px 14px; font-size:12.5px; cursor:pointer; color:var(--text-muted);
+    font-family:var(--font-body);
+  }
+  .seg button.active{background:var(--navy-deep); color:#fff;}
+  .preview-wrap{
+    flex:1; overflow:auto; background:#DCE3EE; display:flex; justify-content:center; padding:18px 10px;
+  }
+  iframe.mail-frame{
+    border:0; background:#fff; box-shadow:0 6px 24px rgba(11,37,69,.18);
+    width:600px; max-width:100%; height:2000px;
+    transition:width .2s ease;
+  }
+  iframe.mail-frame.mobile{width:375px;}
+
+  .toast{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+    background:var(--navy-deep); color:#fff; padding:10px 18px; border-radius:14px;
+    font-size:13px; opacity:0; pointer-events:none; transition:opacity .2s; z-index:60;
+    max-width:90vw; width:max-content; text-align:center; line-height:1.5;
+  }
+  .toast.show{opacity:1; animation:toastIn .25s ease;}
+  .toast.error{background:#B3261E;}
+  .toast.success{background:#1E7B45;}
+
+  .send-status{
+    display:none; align-items:center; gap:6px; font-size:12px; color:#1E7B45; font-weight:600;
+  }
+  .send-status.show{display:inline-flex; animation:pulseOk .35s ease;}
+  .send-status .dot{width:8px;height:8px;border-radius:50%;background:#1E7B45;}
+
+  .editor-panel{
+    background:#F8F9FC; border-bottom:1px solid var(--border); padding:14px 16px;
+    max-height:44vh; overflow:auto;
+  }
+  .editor-panel.collapsed{display:none;}
+  .editor-section-label{
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted);
+    margin:14px 0 8px; font-weight:600;
+  }
+  .editor-section-label:first-child{margin-top:0;}
+  .field-row{margin-bottom:10px;}
+  .field-row label{
+    display:block; font-size:11.5px; color:var(--text-muted); margin-bottom:4px; text-transform:capitalize;
+  }
+  .field-row input, .field-row textarea{
+    width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:7px;
+    font-size:13.5px; font-family:var(--font-body); background:#fff; color:var(--text);
+  }
+  .field-row textarea{resize:vertical; min-height:56px;}
+  .field-row.two-col{display:flex; gap:8px;}
+  .field-row.two-col > div{flex:1;}
+  .editor-actions{display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 4px;}
+  .editor-actions .icon-btn{flex:1; min-width:120px; text-align:center;}
+
+  footer{text-align:center; color:var(--text-muted); font-size:11.5px; padding:20px; line-height:1.7; }
+  footer a{color:inherit; text-decoration:none;}
+  footer .footer-line{margin:2px 0;}
+
+  @media (min-width:720px){
+    .overlay{padding:24px;}
+    .panel{max-width:900px; height:92vh; border-radius:12px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.4);}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .float-layer .sym, .brand-row img{ animation:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="float-layer" aria-hidden="true">
+    <span class="sym" style="left:6%; top:12%; font-size:34px; animation:floatA 6.5s ease-in-out infinite;">Σ</span>
+    <span class="sym" style="left:16%; top:58%; font-size:28px; animation:floatB 7.5s ease-in-out infinite .4s;">π</span>
+    <span class="sym" style="left:34%; top:20%; font-size:20px; animation:floatC 5.8s ease-in-out infinite .8s;">√n</span>
+    <span class="sym" style="left:48%; top:65%; font-size:22px; animation:floatA 8.2s ease-in-out infinite 1.2s;">R(n)</span>
+    <span class="sym" style="left:62%; top:22%; font-size:26px; animation:floatB 6.8s ease-in-out infinite .6s;">∞</span>
+    <span class="sym" style="left:74%; top:60%; font-size:18px; animation:floatC 7.1s ease-in-out infinite 1.6s;">∑</span>
+    <span class="sym" style="left:86%; top:16%; font-size:24px; animation:floatA 9s ease-in-out infinite 2s;">π</span>
+    <span class="sym" style="left:92%; top:55%; font-size:16px; animation:floatB 5.4s ease-in-out infinite .2s;">√</span>
+    <span class="sym star" style="left:26%; top:80%; font-size:14px; animation:drift 12s linear infinite alternate;">★</span>
+    <span class="sym star" style="left:56%; top:12%; font-size:12px; animation:drift 9s linear infinite alternate-reverse;">★</span>
+    <span class="sym dot" style="left:10%; top:38%; animation-delay:.5s;"></span>
+    <span class="sym dot" style="left:40%; top:44%; animation-delay:1.5s;"></span>
+    <span class="sym dot" style="left:68%; top:38%; animation-delay:.9s;"></span>
+    <span class="sym dot" style="left:80%; top:78%; animation-delay:2.1s;"></span>
+    <span class="sym dot" style="left:22%; top:14%; animation-delay:1.1s;"></span>
+  </div>
+  <div class="brand-row">
+    <img src="assets/logo/mmli-logo.png" alt="MMLI logo">
+    <div>
+      <div class="brand-title">MMLI Email Template Library</div>
+      <div class="brand-sub">Unleashing the Genius Within</div>
+    </div>
+  </div>
+  <div class="app-desc">
+    22 ready-to-send email templates for Mind Masters Liberia Initiative. Tap any template to preview it on desktop or mobile, copy its HTML, or open it as a standalone file.
+  </div>
+</header>
+
+<main>
+  <div class="search-row">
+    <input id="search" type="text" placeholder="Search templates (e.g. sponsorship, competition, welcome)…" />
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  <div class="footer-line">Mind Masters Liberia Initiative</div>
+  <div class="footer-line">Paynesville City, Monrovia, Liberia</div>
+  <div class="footer-line">
+    <a href="mailto:mindmastersliberiainitiative@gmail.com">mindmastersliberiainitiative@gmail.com</a>
+    &nbsp;&middot;&nbsp;
+    <a href="tel:+231775990043">+231 775 990 043</a>
+    &nbsp;&middot;&nbsp;
+    <a href="tel:+231889581634">+231 889 581 634</a>
+  </div>
+  <div class="footer-line">
+    <a href="https://mindmastersliberiainitiative.github.io/MMLI.github.io" target="_blank" rel="noopener">mindmastersliberiainitiative.github.io/MMLI.github.io</a>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="titles">
+        <h2 id="panelTitle">Template</h2>
+        <div class="purpose" id="panelPurpose">Purpose</div>
+      </div>
+      <button class="icon-btn" id="closeBtn">✕ Close</button>
+    </div>
+    <div class="toolbar">
+      <div class="seg">
+        <button id="desktopBtn" class="active">🖥 Desktop</button>
+        <button id="mobileBtn">📱 Mobile</button>
+      </div>
+      <button class="icon-btn gold" id="editToggleBtn">✎ Edit Fields</button>
+      <button class="icon-btn" id="copyBtn">Copy HTML</button>
+      <button class="icon-btn" id="openBtn">Open in New Tab</button>
+      <button class="icon-btn" id="downloadBtn">Download .html</button>
+    </div>
+    <div class="editor-panel" id="editorPanel">
+      <div class="field-row two-col">
+        <div>
+          <label>Send To (email)</label>
+          <input type="email" id="toEmail" placeholder="recipient@example.com">
+        </div>
+        <div>
+          <label>Subject</label>
+          <input type="text" id="subjectInput" placeholder="Email subject">
+        </div>
+      </div>
+      <div class="editor-actions">
+        <button class="icon-btn gold" id="updatePreviewBtn">🔄 Update Preview</button>
+        <button class="icon-btn" id="sendGmailBtn">📧 Send via Gmail</button>
+        <button class="icon-btn gold" id="sendNowBtn">🚀 Send Email Now</button>
+        <span class="send-status" id="sendStatus"><span class="dot"></span> Sent!</span>
+      </div>
+      <div class="editor-section-label">Message content</div>
+      <div id="editorFields"></div>
+    </div>
+    <div class="preview-wrap">
+      <iframe class="mail-frame" id="mailFrame"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="templates-data.js"></script>
+<script>
+  const grid = document.getElementById('grid');
+  const overlay = document.getElementById('overlay');
+  const mailFrame = document.getElementById('mailFrame');
+  const panelTitle = document.getElementById('panelTitle');
+  const panelPurpose = document.getElementById('panelPurpose');
+  const toast = document.getElementById('toast');
+  let currentTpl = null;
+
+  // Real MMLI organization details — pre-filled but still editable.
+  const ORG_DEFAULTS = {
+    LOGO_URL: 'https://bhfthomas2003-jpg.github.io/mmli-email-system/assets/logo/mmli-logo.png',
+    CONTACT_EMAIL: 'mindmastersliberiainitiative@gmail.com',
+    CONTACT_ADDRESS: 'Paynesville City, Monrovia, Liberia',
+    PHONE: '+231 775 990 043 / +231 889 581 634',
+    WEBSITE: 'https://mindmastersliberiainitiative.github.io/MMLI.github.io',
+    CURRENT_YEAR: String(new Date().getFullYear()),
+    UNSUBSCRIBE_LINK: 'mailto:mindmastersliberiainitiative@gmail.com?subject=Unsubscribe',
+    FACEBOOK_URL: '#',
+    INSTAGRAM_URL: '#',
+    WHATSAPP_URL: '#',
+    REGISTRATION_LINK: '#'
+  };
+
+  // Sample starting content for the two content fields — fully editable/replaceable.
+  // ---- Google Apps Script configuration ----
+  // Sends real email through your own Gmail account via a free Apps
+  // Script web app (see deployment steps shared alongside this file).
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzteEN3WOdHYjbqH1Wz0s5VWB7l5vY7lGzyGbj68UQFkRscRNHQRHVo2wNc6-aqXAlFwA/exec';
+  function appsScriptConfigured(){
+    return !!APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes('YOUR_');
+  }
+
+  const CONTENT_DEFAULTS = {
+    RECIPIENT_NAME: '[Recipient Name / Organization]',
+    MESSAGE_BODY:
+`The Mind Masters Liberia Initiative (MMLI) is pleased to introduce the Back-to-School Academic Quiz Challenge 2026, an inter-school academic competition designed to promote academic excellence, critical thinking, teamwork, and intellectual development among junior and senior high school students in Liberia.
+
+MMLI is an educational initiative committed to discovering, developing, and celebrating young talents through academic programs that encourage students to pursue excellence in mathematics, science, and other areas of knowledge.
+
+We are seeking support from individuals, organizations, and institutions that share our vision of investing in education and empowering the next generation of thinkers, innovators, scientists, and leaders.
+
+Support can be provided through:
+• Financial contributions
+• Sponsorship of awards and prizes
+• Venue support
+• Media and publicity support
+
+We would be honored to partner with you in making this a successful and impactful educational event.`
+  };
+
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Turns plain typed/pasted text (blank line = new paragraph) into styled
+  // HTML paragraphs matching the template's body font, so multi-paragraph
+  // letters render correctly inside the single MESSAGE_BODY cell.
+  function textToEmailHtml(text){
+    const paras = text.split(/\n\s*\n/);
+    return paras.map(p => {
+      const lines = escapeHtml(p.trim()).split('\n').join('<br>');
+      return `<p style="margin:0 0 18px 0;font-family:Arial, Helvetica, sans-serif;font-size:15px;line-height:26px;color:#2B2F38;">${lines}</p>`;
+    }).join('');
+  }
+
+  function extractPlaceholders(html){
+    const set = new Set();
+    const re = /{{([A-Z_]+)}}/g;
+    let m;
+    while((m = re.exec(html))) set.add(m[1]);
+    return Array.from(set).sort();
+  }
+
+  const LONG_FIELD_HINTS = ['DESCRIPTION','TEXT','SUMMARY','BODY','REASON'];
+
+  function buildEditor(t){
+    const tokens = extractPlaceholders(t.raw);
+    const wrap = document.getElementById('editorFields');
+    wrap.innerHTML = '';
+    tokens.forEach(tok => {
+      const val = ORG_DEFAULTS[tok] || CONTENT_DEFAULTS[tok] || '';
+      const isLong = LONG_FIELD_HINTS.some(h => tok.includes(h));
+      const row = document.createElement('div');
+      row.className = 'field-row';
+      const label = tok.replace(/_/g, ' ').toLowerCase();
+      const safeAttrVal = val.replace(/"/g,'&quot;');
+      row.innerHTML = isLong
+        ? `<label>${label}</label><textarea data-token="${tok}" rows="10" placeholder="${tok}">${escapeHtml(val)}</textarea>`
+        : `<label>${label}</label><input type="text" data-token="${tok}" value="${safeAttrVal}" placeholder="${tok}">`;
+      wrap.appendChild(row);
+    });
+    document.getElementById('subjectInput').value = t.name + ' — Mind Masters Liberia Initiative';
+  }
+
+  function fillTemplate(){
+    let html = currentTpl.raw;
+    document.querySelectorAll('#editorFields input, #editorFields textarea').forEach(inp => {
+      const tok = inp.dataset.token;
+      const v = inp.value;
+      if(v === '') return;
+      const replacement = inp.tagName === 'TEXTAREA' ? textToEmailHtml(v) : escapeHtml(v);
+      html = html.split('{{'+tok+'}}').join(replacement);
+    });
+    return html;
+  }
+
+  function showToast(msg, type){
+    toast.textContent = msg;
+    toast.className = 'toast show' + (type ? ' ' + type : '');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=>toast.classList.remove('show'), type === 'error' ? 5000 : 2400);
+  }
+
+  function renderGrid(list){
+    grid.innerHTML = '';
+    list.forEach((t, i) => {
+      const card = document.createElement('div');
+      card.className = 'tpl-card';
+      card.innerHTML = `
+        <div class="thumb"><span>MMLI · ${String(i+1).padStart(2,'0')}</span></div>
+        <div class="num">TEMPLATE ${String(i+1).padStart(2,'0')}</div>
+        <h3>${t.name}</h3>
+        <p>${t.purpose}</p>
+      `;
+      card.addEventListener('click', () => openPreview(t));
+      grid.appendChild(card);
+    });
+  }
+
+  function openPreview(t){
+    currentTpl = t;
+    panelTitle.textContent = t.name;
+    panelPurpose.textContent = t.purpose + '  ·  ' + t.file;
+    mailFrame.classList.remove('mobile');
+    document.getElementById('desktopBtn').classList.add('active');
+    document.getElementById('mobileBtn').classList.remove('active');
+    document.getElementById('toEmail').value = '';
+    buildEditor(t);
+    mailFrame.srcdoc = fillTemplate();
+    document.getElementById('editorPanel').classList.remove('collapsed');
+    overlay.classList.add('open');
+  }
+
+  document.getElementById('editToggleBtn').addEventListener('click', () => {
+    document.getElementById('editorPanel').classList.toggle('collapsed');
+  });
+
+  document.getElementById('updatePreviewBtn').addEventListener('click', () => {
+    mailFrame.srcdoc = fillTemplate();
+    showToast('Preview updated');
+  });
+
+  document.getElementById('closeBtn').addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) overlay.classList.remove('open'); });
+
+  document.getElementById('desktopBtn').addEventListener('click', () => {
+    mailFrame.classList.remove('mobile');
+    document.getElementById('desktopBtn').classList.add('active');
+    document.getElementById('mobileBtn').classList.remove('active');
+  });
+  document.getElementById('mobileBtn').addEventListener('click', () => {
+    mailFrame.classList.add('mobile');
+    document.getElementById('mobileBtn').classList.add('active');
+    document.getElementById('desktopBtn').classList.remove('active');
+  });
+
+  async function copyText(text){
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch(e){
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    if(!currentTpl) return;
+    await copyText(fillTemplate());
+    showToast('HTML copied — with your edits filled in');
+  });
+
+  document.getElementById('openBtn').addEventListener('click', () => {
+    if(!currentTpl) return;
+    const blob = new Blob([fillTemplate()], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    if(!currentTpl) return;
+    const blob = new Blob([fillTemplate()], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = currentTpl.file;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('sendGmailBtn').addEventListener('click', async () => {
+    if(!currentTpl) return;
+    await copyText(fillTemplate());
+    const to = encodeURIComponent(document.getElementById('toEmail').value || '');
+    const su = encodeURIComponent(document.getElementById('subjectInput').value || '');
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}`;
+    window.open(gmailUrl, '_blank');
+    showToast('Design copied — paste it into the Gmail body (Ctrl/⌘+V)');
+  });
+
+  document.getElementById('sendNowBtn').addEventListener('click', async () => {
+    if(!currentTpl) return;
+
+    if (!appsScriptConfigured()) {
+      showToast('Email sending isn\u2019t set up yet — deploy the Apps Script and paste its URL into APPS_SCRIPT_URL.', 'error');
+      return;
+    }
+
+    const toEmail = document.getElementById('toEmail').value.trim();
+    const subject = document.getElementById('subjectInput').value.trim();
+    if (!toEmail) {
+      showToast('Add a recipient email first.', 'error');
+      document.getElementById('toEmail').focus();
+      return;
+    }
+
+    const btn = document.getElementById('sendNowBtn');
+    const statusEl = document.getElementById('sendStatus');
+    const originalLabel = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Sending…';
+    statusEl.classList.remove('show');
+
+    try {
+      // Apps Script web apps don't return CORS headers the browser will
+      // let us read, so we can't confirm success/failure from the
+      // response itself — this request is fire-and-forget by design.
+      // no-cors mode avoids the CORS error entirely and still delivers
+      // the request to Apps Script, which sends the email synchronously.
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({ to: toEmail, subject: subject, html: fillTemplate() }),
+      });
+      showToast('Email request sent — check Gmail\u2019s Sent folder in a moment to confirm delivery.', 'success');
+      statusEl.classList.add('show');
+      setTimeout(() => statusEl.classList.remove('show'), 3000);
+    } catch (err) {
+      console.error('Apps Script send failed:', err);
+      showToast('Send failed — check your internet connection and try again.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalLabel;
+    }
+  });
+
+  document.getElementById('search').addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    const filtered = MMLI_TEMPLATES.filter(t =>
+      t.name.toLowerCase().includes(q) || t.purpose.toLowerCase().includes(q) || t.file.toLowerCase().includes(q)
+    );
+    renderGrid(filtered);
+  });
+
+  renderGrid(MMLI_TEMPLATES);
+</script>
+
+</body>
+</html>
